@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-"""Sample training code
+"""Sample training code, SchNet architecture is adopted, alchemy is needed, layers tech is also needed
 """
 import numpy as np
 import pandas as pd
@@ -31,7 +31,7 @@ def binary_acc(y_pred, y_test):
             acc += 1
 
     acc = acc/tot*100
-    # acc = th.round(acc * 100)
+
     return acc
 
 
@@ -57,7 +57,7 @@ def predict(res):
         return th.tensor(ans)
 
 
-def train(model="sch", epochs=80, device=th.device("cpu"), dataset='', save='./'):
+def train(model="sch", epochs= 'number for definition' , device=th.device("cpu"), dataset='', save='./'):
     print("start")
     train_dir = "./"
     train_file = dataset+"_train.csv"
@@ -72,19 +72,19 @@ def train(model="sch", epochs=80, device=th.device("cpu"), dataset='', save='./'
     test_file = dataset+"_valid.csv"
     test_dataset.mode = "Train"
     test_dataset.transform = None
-    test_dataset.file_path = test_file
+    test_dataset.file_path =  'file_target' 
     test_dataset._load()
 
     alchemy_loader = DataLoader(
         dataset=alchemy_dataset,
-        batch_size=50,
+        batch_size= 'number for definition' ,
         collate_fn=batcher(),
         shuffle=True,
         num_workers=0,
     )
     test_loader = DataLoader(
         dataset=test_dataset,
-        batch_size=50,
+        batch_size= 'number for definition' ,
         collate_fn=batcher(),
         shuffle=False,
         num_workers=0,
@@ -93,19 +93,9 @@ def train(model="sch", epochs=80, device=th.device("cpu"), dataset='', save='./'
     if model == "sch":
         model = SchNetModel(norm=False, output_dim=2)
     print(model)
-    # if model.name in ["MGCN", "SchNet"]:
-    #     model.set_mean_std(alchemy_dataset.mean, alchemy_dataset.std, device)
+
     model.to(device)
-    # print("test_dataset.mean= %s" % (alchemy_dataset.mean))
-    # print("test_dataset.std= %s" % (alchemy_dataset.std))
 
-    # loss_fn = nn.MSELoss()
-    # MAE_fn = nn.L1Loss()
-    # BceLoss = nn.CrossEntropyLoss()
-
-    # BceLoss = nn.BCELoss()
-    # BceLoss = loss_sq()
-    # BceLoss = nn.BCEWithLogitsLoss
     optimizer = th.optim.Adam(model.parameters(), lr=0.0001)
 
     for epoch in range(epochs):
@@ -119,18 +109,11 @@ def train(model="sch", epochs=80, device=th.device("cpu"), dataset='', save='./'
             batch.label = batch.label.to(device)
 
             res = model(batch.graph)
-            # res = predict(res)
-            # print(f'res={res}')
 
-            # print(f'batch.label={batch.label}')
-            # print(f'Res: {res.cpu().detach().numpy()}')
-            # print(f'Label: {batch.label.cpu().detach().numpy()}')
-            # loss = BceLoss(F.sigmoid(res), F.sigmoid(batch.label))
             loss = loss_sq(res, batch.label)
-            # print(loss)
+         
             acc = binary_acc(res, batch.label)
-            # loss = loss_fn(res, batch.label)
-            # mae = MAE_fn(res, batch.label)
+           
 
             optimizer.zero_grad()
             loss.backward()
@@ -153,7 +136,7 @@ def train(model="sch", epochs=80, device=th.device("cpu"), dataset='', save='./'
             epoch, w_loss,  acc))
 
         val_loss, val_acc = 0, 0
-        if epoch % 20 == 0:
+        if epoch %  'number for definition'  == 0:
             valid_op = open(save+'/Validres_'+str(epoch)+'.csv', 'w')
         for jdx, batch in enumerate(test_loader):
             batch.graph.to(device)
@@ -174,7 +157,7 @@ def train(model="sch", epochs=80, device=th.device("cpu"), dataset='', save='./'
             val_acc += acc
             l = batch.label.cpu().detach().numpy()
             r = res.cpu().detach().numpy()
-            if epoch % 20 == 0:
+            if epoch %  'number for definition'  == 0:
                 print_res(l, r, valid_op)
         # val_mae /= jdx + 1
         val_loss /= jdx + 1
@@ -182,21 +165,12 @@ def train(model="sch", epochs=80, device=th.device("cpu"), dataset='', save='./'
         print("Epoch {:2d}, val_loss: {:.7f},  val_ACC: {:.7f}".format(
             epoch, val_loss, val_acc))
 
-        if epoch % 80 == 0:
+        if epoch % 'number for definition' == 0:
             th.save(model.state_dict(), save+"/model_"+str(epoch))
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-M",
-                        "--model",
-                        help="model name (sch)",
-                        default="sch")
-    parser.add_argument("--epochs", help="number of epochs", default=10000)
-    parser.add_argument("--dataset", help="dataset to train", default="")
-    parser.add_argument("--save", help="folder to save", default="")
-    device = th.device('cuda:0' if th.cuda.is_available() else 'cpu')
-    args = parser.parse_args()
-    assert args.model in ["sch"]
-    # dataset_split("delaney.csv")
-    train(args.model, int(args.epochs), device, args.dataset, args.save)
+   "model selection first"
+   "parameters control"
+    "added functions"
